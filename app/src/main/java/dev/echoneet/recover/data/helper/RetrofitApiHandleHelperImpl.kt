@@ -1,5 +1,6 @@
 package dev.echoneet.recover.data.helper
 
+import android.util.Log
 import dev.echoneet.recover.data.model.ResultWithStatus
 import retrofit2.Response
 
@@ -16,6 +17,7 @@ class RetrofitApiHandleHelperImpl : RetrofitApiHandleHelper {
                 ResultWithStatus.error(null, defaultErrorMessage, null)
             }
         } catch (e: Throwable) {
+            Log.e("test", "test", e)
             ResultWithStatus.error(null, defaultErrorMessage, null)
         }
     }

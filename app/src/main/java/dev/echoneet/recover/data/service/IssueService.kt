@@ -6,5 +6,5 @@ import retrofit2.http.GET
 
 interface IssueService {
     @GET("issue")
-    public fun listIssue() : Response<List<Issue>>
+    suspend fun listIssue(): Response<List<Issue>>
 }
