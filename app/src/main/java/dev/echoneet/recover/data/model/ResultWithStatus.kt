@@ -17,7 +17,7 @@ data class ResultWithStatus<out T>(
             return ResultWithStatus(Status.SUCCESS, data, null, null)
         }
 
-        fun <T> error(data: T? = null, message: String, error: Exception?): ResultWithStatus<T> {
+        fun <T> error(data: T? = null, message: String?, error: Exception?): ResultWithStatus<T> {
             return ResultWithStatus(Status.ERROR, data, error, message)
         }
 

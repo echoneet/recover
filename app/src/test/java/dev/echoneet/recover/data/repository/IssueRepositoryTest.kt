@@ -4,6 +4,8 @@ import androidx.room.Dao
 import dev.echoneet.recover.data.entity.Issue
 import dev.echoneet.recover.data.local.IssueDao
 import dev.echoneet.recover.data.model.ResultWithStatus
+import dev.echoneet.recover.data.remote.IssueRemoteDataSource
+import dev.echoneet.recover.data.remote.IssueRemoteDataSourceImpl
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -13,12 +15,15 @@ import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 
 class IssueRepositoryTest {
-    lateinit var issueRepositoryImpl : IssueRepositoryImpl
+    lateinit var issueRepository: IssueRepository
 
     @Mock
     lateinit var issueDao: IssueDao
 
-    var issueList : List<Issue> = listOf(
+    @Mock
+    lateinit var issueRemoteDataSource: IssueRemoteDataSource
+
+    var issueList: List<Issue> = listOf(
         Issue(
             id = 1,
             code = "AA-000001",
@@ -37,21 +42,57 @@ class IssueRepositoryTest {
 
 
     @Before
-    fun setup(){
+    fun setup() {
         MockitoAnnotations.openMocks(this)
-        issueRepositoryImpl = IssueRepositoryImpl(issueDao)
+        issueRepository = IssueRepositoryImpl(issueDao, issueRemoteDataSource)
     }
 
     @Test
-    fun listIssue()  = runBlocking {
+    fun `List issue while online`() = runBlocking {
+        `when`(issueRemoteDataSource.listAllIssue()).thenReturn(
+            ResultWithStatus.success(
+                issueList,
+            )
+        )
         `when`(issueDao.getAll()).thenReturn(issueList)
 
-        val issueListFromFunction = issueRepositoryImpl.getIssueList()
+        val issueListFromFunction = issueRepository.getIssueList()
 
+        verify(issueRemoteDataSource).listAllIssue()
+        verifyNoMoreInteractions(issueRemoteDataSource)
+        verify(issueDao).deleteAll()
+        verify(issueDao).insertAll(issueList)
         verify(issueDao).getAll()
         verifyNoMoreInteractions(issueDao)
 
-        assertEquals(issueListFromFunction, ResultWithStatus.success(issueList))
+        assertEquals(
+            issueListFromFunction,
+            ResultWithStatus.success(issueList)
+        )
+    }
+
+    @Test
+    fun `List issue while offline`() = runBlocking {
+        `when`(issueRemoteDataSource.listAllIssue()).thenReturn(
+            ResultWithStatus.error(
+                null,
+                "can not list issue from internet",
+                null
+            )
+        )
+        `when`(issueDao.getAll()).thenReturn(issueList)
+
+        val issueListFromFunction = issueRepository.getIssueList()
+
+        verify(issueRemoteDataSource).listAllIssue()
+        verifyNoMoreInteractions(issueRemoteDataSource)
+        verify(issueDao).getAll()
+        verifyNoMoreInteractions(issueDao)
+
+        assertEquals(
+            issueListFromFunction,
+            ResultWithStatus.error(issueList, "can not list issue from internet", null)
+        )
     }
 
 }
