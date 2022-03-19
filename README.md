@@ -8,7 +8,7 @@ this project included following
 * [Hlit](https://developer.android.com/training/dependency-injection/hilt-android) for dependency injection
 * [Room](https://developer.android.com/training/data-storage/room) for local database
 * [Retrofit](https://square.github.io/retrofit/) for REST api calls
-* [Coroutines](https://developer.android.com/kotlin/coroutines) [2](https://developer.android.com/topic/libraries/architecture/coroutines) for asynchronous task managing
+* [Coroutines](https://developer.android.com/kotlin/coroutines) in [App Architecture](https://developer.android.com/topic/libraries/architecture/coroutines) for asynchronous task managing
 * [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) for separate out view data ownership from UI controller logic.
 * [Livedata](https://developer.android.com/topic/libraries/architecture/livedata) observable data from ViewModel
 * Unit test using junit and mockito
