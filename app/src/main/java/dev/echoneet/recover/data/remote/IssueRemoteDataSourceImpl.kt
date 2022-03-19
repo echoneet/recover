@@ -23,4 +23,11 @@ class IssueRemoteDataSourceImpl @Inject constructor(
             "create failed"
         )
     }
+
+    override suspend fun cancelIssue(issueId: Int): ResultWithStatus<Issue> {
+        return retrofitApiHandleHelper.getResponse(
+            { issueService.cancelIssue(issueId) },
+            "cancel failed"
+        )
+    }
 }

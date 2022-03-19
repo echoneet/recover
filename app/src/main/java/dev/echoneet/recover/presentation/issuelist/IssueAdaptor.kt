@@ -12,7 +12,12 @@ import dev.echoneet.recover.data.entity.Issue
 import dev.echoneet.recover.databinding.IssueItemBinding
 
 class IssueAdaptor(private val context: Context, private val dataList: ArrayList<Issue>) :
-    RecyclerView.Adapter<IssueAdaptor.IssueViewHolder>() {
+    RecyclerView.Adapter<IssueAdaptor.IssueViewHolder>(), IssueItemTouchHelperListener {
+    private var _dismissListener: IssueItemTouchHelperListener? = null
+
+    public fun setOnItemDismissListener(listener: IssueItemTouchHelperListener) {
+        _dismissListener = listener
+    }
 
     class IssueViewHolder(
         private val context: Context,
@@ -55,5 +60,9 @@ class IssueAdaptor(private val context: Context, private val dataList: ArrayList
         dataList.clear()
         dataList.addAll(issueList)
         notifyDataSetChanged()
+    }
+
+    override fun onItemDismiss(position: Int) {
+        _dismissListener?.onItemDismiss(dataList[position].id)
     }
 }

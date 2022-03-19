@@ -15,7 +15,7 @@ import javax.inject.Named
 @Module
 @InstallIn(SingletonComponent::class)
 class ServiceModule {
-    private val issueApiUrl = "http://localhost:5108/"
+    private val issueApiUrl = "https://recover-api.echoneet.dev/"
 
     @Provides
     @Named("issue")
@@ -32,7 +32,10 @@ class ServiceModule {
     }
 
     @Provides
-    fun provideIssueRemoteDataSource(issueService: IssueService,retrofitApiHandleHelper: RetrofitApiHandleHelper) : IssueRemoteDataSource{
+    fun provideIssueRemoteDataSource(
+        issueService: IssueService,
+        retrofitApiHandleHelper: RetrofitApiHandleHelper
+    ): IssueRemoteDataSource {
         return IssueRemoteDataSourceImpl(issueService, retrofitApiHandleHelper)
     }
 }

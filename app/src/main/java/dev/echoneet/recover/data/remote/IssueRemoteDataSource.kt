@@ -7,4 +7,6 @@ interface IssueRemoteDataSource {
     suspend fun listAllIssue(): ResultWithStatus<List<Issue>>
 
     suspend fun createNewIssue(issue: Issue): ResultWithStatus<Issue>
+
+    suspend fun cancelIssue(issueId: Int): ResultWithStatus<Issue>
 }

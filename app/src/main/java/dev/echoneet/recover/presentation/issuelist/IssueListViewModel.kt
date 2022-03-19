@@ -1,6 +1,5 @@
 package dev.echoneet.recover.presentation.issuelist
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -59,7 +58,7 @@ class IssueListViewModel @Inject constructor(private val issueRepository: IssueR
             )
 
 
-            if (result.status == ResultWithStatus.Status.ERROR || result.data == null) {
+            if (result.status == ResultWithStatus.Status.ERROR) {
                 val newViewState = ViewState(
                     ViewStatus.ERROR,
                     result.message ?: "unknown error"
@@ -67,12 +66,27 @@ class IssueListViewModel @Inject constructor(private val issueRepository: IssueR
                 _viewState.value = newViewState
 
             } else {
-                val currentIssueList = _issueList.value?.toMutableList() ?: mutableListOf()
-                currentIssueList.add(
-                    0,
-                    result.data
+                _issueList.value = result.data?.reversed() ?: ArrayList()
+            }
+        }
+    }
+
+    public fun cancelIssue(issueId: Int) {
+        viewModelScope.launch {
+            val result = issueRepository.cancelIssue(
+                issueId
+            )
+
+
+            if (result.status == ResultWithStatus.Status.ERROR) {
+                val newViewState = ViewState(
+                    ViewStatus.ERROR,
+                    result.message ?: "unknown error"
                 )
-                _issueList.value = currentIssueList
+                _viewState.value = newViewState
+
+            } else {
+                _issueList.value = result.data?.reversed() ?: ArrayList()
             }
         }
     }

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -53,6 +54,15 @@ class IssueListActivity : AppCompatActivity() {
         issueAdaptor = IssueAdaptor(this, ArrayList())
         binding.issueRecyclerView.adapter = issueAdaptor
 
+        val callback = IssueItemTouchHelperCallback(issueAdaptor)
+        val itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(binding.issueRecyclerView)
+
+        issueAdaptor.setOnItemDismissListener {
+            binding.loading.visibility = View.VISIBLE
+            viewModel.cancelIssue(it)
+        }
+
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.getNewData()
         }
@@ -61,7 +71,7 @@ class IssueListActivity : AppCompatActivity() {
     }
 
     private fun subscribeUi() {
-        viewModel.issueList.observe(this, Observer {
+        viewModel.issueList.observe(this) {
             issueAdaptor.updateData(it ?: listOf())
 
             binding.loading.visibility = View.GONE
@@ -71,9 +81,9 @@ class IssueListActivity : AppCompatActivity() {
                 popupNewCreateIssueDialog()
             }
 
-        })
+        }
 
-        viewModel.viewState.observe(this, Observer {
+        viewModel.viewState.observe(this) {
             if (it.status == ViewStatus.ERROR) {
                 Snackbar.make(
                     binding.rootView,
@@ -82,7 +92,7 @@ class IssueListActivity : AppCompatActivity() {
                 ).setBackgroundTint(Color.RED)
                     .show()
             }
-        })
+        }
     }
 
     private fun popupNewCreateIssueDialog() {
@@ -96,13 +106,13 @@ class IssueListActivity : AppCompatActivity() {
             .setView(input)
             .setPositiveButton(
                 "Submit"
-            ) { dialog, whichButton ->
+            ) { _, _ ->
                 val title = input.text.toString()
                 viewModel.createNewIssue(title)
             }
             .setNegativeButton(
                 "Cancel"
-            ) { dialog, whichButton -> dialog.dismiss() }
+            ) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 }

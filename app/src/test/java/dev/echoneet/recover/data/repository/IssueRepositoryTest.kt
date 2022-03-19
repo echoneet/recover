@@ -21,7 +21,7 @@ class IssueRepositoryTest {
     @Mock
     lateinit var issueRemoteDataSource: IssueRemoteDataSource
 
-    var mockIssue = Issue(
+    val mockIssue = Issue(
         id = 1,
         code = "AA-000001",
         title = "test title",
@@ -29,15 +29,18 @@ class IssueRepositoryTest {
         status = "Created"
     )
 
-    var mockIssueList: List<Issue> = listOf(
+    val mockCancelIssue = Issue(
+        id = 2,
+        code = "AA-000002",
+        title = "test title",
+        description = "test issue",
+        status = "Cancelled"
+    )
+
+
+    val mockIssueList: List<Issue> = listOf(
         mockIssue,
-        Issue(
-            id = 2,
-            code = "AA-000002",
-            title = "test title",
-            description = "test issue",
-            status = "Cancelled"
-        )
+        mockCancelIssue
     )
 
 
@@ -100,14 +103,17 @@ class IssueRepositoryTest {
         `when`(issueRemoteDataSource.createNewIssue(mockIssue)).thenReturn(
             ResultWithStatus.success(mockIssue)
         )
+        `when`(issueDao.getAll()).thenReturn(mockIssueList)
 
         val result = issueRepository.createNewIssue(mockIssue)
 
         verify(issueRemoteDataSource).createNewIssue(mockIssue)
         verifyNoMoreInteractions(issueRemoteDataSource)
         verify(issueDao).insert(mockIssue)
+        verify(issueDao).getAll()
+        verifyNoMoreInteractions(issueDao)
 
-        assertEquals(ResultWithStatus.success(mockIssue), result)
+        assertEquals(ResultWithStatus.success(mockIssueList), result)
     }
 
     @Test
@@ -115,15 +121,57 @@ class IssueRepositoryTest {
         `when`(issueRemoteDataSource.createNewIssue(mockIssue)).thenReturn(
             ResultWithStatus.error(null, "error", null)
         )
-        
+        `when`(issueDao.getAll()).thenReturn(mockIssueList)
+
         val result = issueRepository.createNewIssue(mockIssue)
 
         verify(issueRemoteDataSource).createNewIssue(mockIssue)
         verifyNoMoreInteractions(issueRemoteDataSource)
-        verifyNoInteractions(issueDao)
+        verify(issueDao).getAll()
+        verifyNoMoreInteractions(issueDao)
 
         assertEquals(
-            ResultWithStatus.error(null, "error", null), result
+            ResultWithStatus.error(mockIssueList, "error", null), result
+        )
+    }
+
+
+    @Test
+    fun `cancel new issue success`() = runBlocking {
+        `when`(issueRemoteDataSource.cancelIssue(1)).thenReturn(
+            ResultWithStatus.success(mockCancelIssue)
+        )
+        `when`(issueDao.getAll()).thenReturn(mockIssueList)
+
+        val mockCancelIssueId = 1
+        val result = issueRepository.cancelIssue(mockCancelIssueId)
+
+        verify(issueRemoteDataSource).cancelIssue(mockCancelIssueId)
+        verifyNoMoreInteractions(issueRemoteDataSource)
+        verify(issueDao).update(mockCancelIssue)
+        verify(issueDao).getAll()
+        verifyNoMoreInteractions(issueDao)
+
+        assertEquals(ResultWithStatus.success(mockIssueList), result)
+    }
+
+    @Test
+    fun `cancel new issue fail`() = runBlocking {
+        `when`(issueRemoteDataSource.cancelIssue(1)).thenReturn(
+            ResultWithStatus.error(null, "error", null)
+        )
+        `when`(issueDao.getAll()).thenReturn(mockIssueList)
+
+        val mockCancelIssueId = 1
+        val result = issueRepository.cancelIssue(mockCancelIssueId)
+
+        verify(issueRemoteDataSource).cancelIssue(mockCancelIssueId)
+        verifyNoMoreInteractions(issueRemoteDataSource)
+        verify(issueDao).getAll()
+        verifyNoMoreInteractions(issueDao)
+
+        assertEquals(
+            ResultWithStatus.error(mockIssueList, "error", null), result
         )
     }
 

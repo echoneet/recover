@@ -1,9 +1,6 @@
 package dev.echoneet.recover.data.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import dev.echoneet.recover.data.entity.Issue
 
 @Dao
@@ -18,5 +15,8 @@ interface IssueDao {
     suspend fun getAll(): List<Issue>
 
     @Query("DELETE FROM issue")
-    suspend fun deleteAll();
+    suspend fun deleteAll()
+    
+    @Update
+    suspend fun update(issue: Issue)
 }

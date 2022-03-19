@@ -7,5 +7,7 @@ import dev.echoneet.recover.data.model.ResultWithStatus
 interface IssueRepository {
     suspend fun getIssueList(): ResultWithStatus<List<Issue>>
 
-    suspend fun createNewIssue(issue: Issue): ResultWithStatus<Issue>
+    suspend fun createNewIssue(issue: Issue): ResultWithStatus<List<Issue>>
+
+    suspend fun cancelIssue(issueId: Int): ResultWithStatus<List<Issue>>
 }
