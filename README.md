@@ -16,7 +16,7 @@ this project included following
 backend sourcecode that use in this project will be available at [Recover-api](https://github.com/echoneet/recover-api)
 
 ## TODO
-[] implement other key features (auth, issue detail, comment, live chat, etc.)
-[] implement other tests (End-to-end tests, integration tests)
-[] try Flow
-[] try jetpack compose
+- [ ] implement other key features (auth, issue detail, comment, live chat, etc.)
+- [ ] implement other tests (End-to-end tests, integration tests)
+- [ ] try Flow
+- [ ] try jetpack compose
