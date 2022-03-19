@@ -17,7 +17,6 @@ class RetrofitApiHandleHelperImpl : RetrofitApiHandleHelper {
                 ResultWithStatus.error(null, defaultErrorMessage, null)
             }
         } catch (e: Throwable) {
-            Log.e("test", "test", e)
             ResultWithStatus.error(null, defaultErrorMessage, null)
         }
     }

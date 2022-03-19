@@ -11,6 +11,9 @@ interface IssueDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(issueList: List<Issue>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(issue: Issue)
+
     @Query("SELECT * FROM issue")
     suspend fun getAll(): List<Issue>
 

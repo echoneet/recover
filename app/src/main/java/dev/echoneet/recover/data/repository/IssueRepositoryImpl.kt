@@ -22,4 +22,16 @@ class IssueRepositoryImpl @Inject constructor(
         return ResultWithStatus.success(issueDao.getAll())
     }
 
+    override suspend fun createNewIssue(issue: Issue): ResultWithStatus<Issue> {
+        val result = issueRemoteDataSource.createNewIssue(issue)
+        if (result.status == ResultWithStatus.Status.ERROR || result.data == null) {
+            return ResultWithStatus.error(null, result.message, result.error)
+        }
+
+        issueDao.insert(result.data)
+        return ResultWithStatus.success(result.data)
+
+
+    }
+
 }
